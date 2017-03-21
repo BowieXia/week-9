@@ -70,12 +70,12 @@ Moving your mouse outside of the circle should remove the highlighting.
 ===================== */
 
 // Global Variables
-
-var myRectangle;
+var EptNum = 0;
+var myRectangle = [] ;
 
 // Initialize Leaflet Draw
 
-var drawControl = new L.Control.Draw({
+var RectdrawControl = new L.Control.Draw({
   draw: {
     polyline: false,
     polygon: false,
@@ -85,7 +85,29 @@ var drawControl = new L.Control.Draw({
   }
 });
 
-map.addControl(drawControl);
+var CircledrawControl = new L.Control.Draw({
+  draw: {
+    polyline: false,
+    polygon: false,
+    circle: true,
+    marker: false,
+    rectangle: false,
+  }
+});
+
+var PolygondrawControl = new L.Control.Draw({
+  draw: {
+    polyline: false,
+    polygon: true,
+    circle: false,
+    marker: false,
+    rectangle: false,
+  }
+});
+
+map.addControl(RectdrawControl);
+map.addControl(CircledrawControl);
+map.addControl(PolygondrawControl);
 
 // Run every time Leaflet draw creates a new layer
 
@@ -93,7 +115,33 @@ map.on('draw:created', function (e) {
     var type = e.layerType; // The type of shape
     var layer = e.layer; // The Leaflet layer for the shape
     var id = L.stamp(layer); // The unique Leaflet ID for the layer
-
-
+    console.log("New ID:",id);
+    if (EptNum !== 0) {
+      map.removeLayer(myRectangle[EptNum-1]);
+      myRectangle.push(layer);
+      console.log("Push num:",EptNum);
+      layer.addTo(map);
+    }else {
+      myRectangle.push(layer);
+      console.log("Push num:",EptNum);
+      layer.addTo(map);
+    }
+    var $ShapeH1;
+    if (EptNum !== 0) {
+      console.log(EptNum);
+      EptNum += 1;
+      $("h1").remove();
+      console.log("true",$ShapeH1);
+      $ShapeH1 = $( "<h1>Current ID: </h1>" );
+      $ShapeH1.append(id);
+      $("#shapes").append($ShapeH1);
+    }else {
+      console.log(EptNum);
+      EptNum += 1;
+      console.log("false",$ShapeH1);
+      $ShapeH1 = $( "<h1>Current ID: </h1>" );
+      $ShapeH1.append(id);
+      $("#shapes").append($ShapeH1);
+    }
 
 });
