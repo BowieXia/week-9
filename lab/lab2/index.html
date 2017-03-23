@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="css/leaflet.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://mapzen.com/js/mapzen.css">
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css">
+    <!-- style sheet for mapzen.js -->
   </head>
   <body>
     <!-- Map -->
@@ -16,7 +19,8 @@
     <button id="toggle-sidebar">
       <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
     </button>
-    <div id="map" class="map"></div>
+    <div id="map" class="map">
+    </div>
     <!-- Sidebar -->
     <div class="sidebar">
       <h1>Generating Routes</h1>
@@ -29,6 +33,10 @@
     <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <!-- latest version of mapzen.js-->
+    <script src="https://mapzen.com/js/mapzen.js"></script>
+    <!-- latest minified version of mapzen.js -->
+    <script src="https://mapzen.com/js/mapzen.min.js"></script>
     <script src="js/decode.js"></script>
     <script src="js/setup.js"></script>
     <script src="js/main.js"></script>

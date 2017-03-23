@@ -123,8 +123,13 @@ var state = {
   }
 };
 
+var temp = {
+  Routes:null,
+  Destination:null
+};
+
 /* We'll use underscore's `once` function to make sure this only happens
- *  one time even if weupdate the position later
+ *  one time even if we update the position later
  */
 var goToOrigin = _.once(function(lat, lng) {
   map.flyTo([lat, lng], 14);
@@ -166,10 +171,67 @@ $(document).ready(function() {
 
   // click handler for the "calculate" button (probably you want to do something with this)
   $("#calculate").click(function(e) {
+
+    if (temp.Routes !== null){
+      map.removeLayer(temp.Routes);
+      map.removeLayer(temp.Destination);
+    }
+    $( ".temp" ).remove();
+
     var dest = $('#dest').val();
+    var searchStr = "https://search.mapzen.com/v1/search?text=" +
+      dest + "&api_key=mapzen-QGsvKtQ&size=1";
+
     console.log(dest);
+    $.ajax(searchStr).done(function(data){
+      var destCoor = data.features[0].geometry.coordinates;
+      var routeJson = {
+        "locations":[
+          {"lat":state.position.marker._latlng.lat,"lon":state.position.marker._latlng.lng},
+          {"lat":destCoor[1],"lon":destCoor[0]}],
+        "costing":"auto",
+        "directions_options":{"units":"miles"}};
+      var routeStr = "https://matrix.mapzen.com/optimized_route?json=" +
+        JSON.stringify(routeJson) + "&api_key=mapzen-DvrAKEJ";
+      console.log(routeStr);
+      $.ajax(routeStr).done(function(routeData){
+        console.log(routeData);
+        var routePoints = decode(routeData.trip.legs[0].shape);
+        var lineCoor = _.map(routePoints,function(theP){
+          return (theP.reverse());
+        });
+        _.each(routeData.trip.legs[0].maneuvers,function(theS){
+          $(".sidebar").append(
+            "<div class='temp'><h4>Step " + (routeData.trip.legs[0].maneuvers.indexOf(theS) + 1).toString() +
+            ": " + theS.verbal_pre_transition_instruction + " Takes " + theS.time + " minutes" + "</h4></div>");
+        });
+
+        var lineGeoj = {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "properties": {},
+              "geometry": {
+                "type": "LineString",
+                "coordinates": lineCoor
+              }
+            },
+          ]
+        };
+
+        temp.Routes = L.geoJSON(lineGeoj);
+        temp.Destination = L.circleMarker([destCoor[1], destCoor[0]],
+          {color: "#16a085"});
+        temp.Routes.addTo(map);
+        temp.Destination.addTo(map);
+
+        map.fitBounds([
+          [state.position.marker._latlng.lat,state.position.marker._latlng.lng],
+          [destCoor[1], destCoor[0]]
+        ]);
+      });
+    });
   });
 
 });
-
-
